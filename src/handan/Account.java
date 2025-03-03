@@ -24,17 +24,17 @@ public class Account {
 
   // Default Konstruktor för ett nytt bankkonto
   public Account() {
-    this(0, 2.4, false);
+    this(accountName, 0, 2.4, false);
   }
 
-  public Account(int inBalance, double inInterestRate, boolean addNumber) {
+  public Account(String theAccountType, int theBalance, double theInterestRate, boolean addNumber) {
     if (addNumber) {
       lastAssignedNumber++; // Ska bara räknas upp med 1 ibland.
     }
     accountNumber = lastAssignedNumber;
-    accountType = accountName;
-    balance = BigDecimal.valueOf(inBalance);
-    interestRate = BigDecimal.valueOf(inInterestRate);
+    accountType = theAccountType;
+    balance = BigDecimal.valueOf(theBalance);
+    interestRate = BigDecimal.valueOf(theInterestRate);
   }
 
   /**
@@ -73,28 +73,44 @@ public class Account {
     return accountNumber;
   }
 
-  @Override
-  public String toString() {
-    return toString(true);
+  public String getAccountType() {
+    return accountType;
+  }
+
+  public int getBalance() {
+    return balance.intValue();
   }
 
   /**
-   * Vid bearbetning av kontot med kontonummer saldo kontotyp, om percentOn blir
-   * det med procent.
+   * Vid bearbetning av kontot med kontonummer saldo kontotyp.
    *
-   * @param percentOn
    * @return "kontonr saldo kontotyp <procent %>"
    */
-  public String toString(boolean percentOn) {
+  public String infoAccount() {
     String balanceStr = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(balance);
-
-    if (percentOn) {
-      NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.of("SV", "SE"));
-      percentFormat.setMaximumFractionDigits(1); // Anger att vi vill ha max 1 decimal
-      String percentStr = percentFormat.format(interestRate.doubleValue() / 100.0);
-      return accountNumber + " " + balanceStr + " " + accountType + " " + percentStr;
-    }
     return accountNumber + " " + balanceStr + " " + accountType;
+  }
+
+  public String makeAccountInfo(int theBalance, double theInterestRate) {
+    String balanceStr = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(theBalance);
+    NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.of("SV", "SE"));
+    percentFormat.setMaximumFractionDigits(1); // Anger att vi vill ha max 1 decimal
+    String percentStr = percentFormat.format(theInterestRate / 100.0);
+    return accountNumber + " " + balanceStr + " " + accountType + " " + percentStr;
+  }
+
+  public void setAccountType(String theAccountType) {
+    accountType = theAccountType;
+  }
+
+  /**
+   * Vid utskrift av kontot med kontonummer saldo kontotyp, percent.
+   *
+   * @return "kontonr saldo kontotyp <procent %>"
+   */
+  @Override
+  public String toString() {
+    return makeAccountInfo(balance.intValue(), interestRate.doubleValue());
   }
 
   /**
