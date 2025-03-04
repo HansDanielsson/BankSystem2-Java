@@ -10,7 +10,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 // Klassdeklarationer för Kontot
-public class Account {
+public abstract class Account {
 
   // Variabler som är gemensamt för alla konton
   private static int lastAssignedNumber = 1000;
@@ -38,6 +38,23 @@ public class Account {
   }
 
   /**
+   * Rutin som tar bort belopper (theAmount) från saldo (balance) Använder
+   * BigDecimal
+   *
+   * @param theAmount
+   * @return om det gick bra
+   */
+  public boolean balanceSubtract(int theAmount) {
+    boolean result = true;
+    try {
+      balance = balance.subtract(BigDecimal.valueOf(theAmount));
+    } catch (Exception e) {
+      result = false;
+    }
+    return result;
+  }
+
+  /**
    * Rutin som beräknar räntan på BigDecimal-modell enligt saldo*räntesats / 100.0
    * konverterar till double-tal
    *
@@ -49,19 +66,20 @@ public class Account {
   }
 
   /**
-   * Rutin som sätter in beloppet (amount) till saldo (balance) Kontroll har redan
-   * utförts på amount > 0
+   * Rutin som sätter in beloppet (theAmount) till saldo (balance) Kontroll har
+   * redan utförts på theAmount > 0
    *
-   * @param amount
-   * @return true hela tiden för att amount > 0
+   * @param theAmount
+   * @return true hela tiden för att theAmount > 0
    */
-  public boolean deposit(int amount) {
+  public boolean deposit(int theAmount) {
+    boolean result = true;
     try {
-      balance = balance.add(BigDecimal.valueOf(amount));
+      balance = balance.add(BigDecimal.valueOf(theAmount));
     } catch (Exception e) {
-      return false;
+      result = false;
     }
-    return true;
+    return result;
   }
 
   /**
@@ -120,15 +138,5 @@ public class Account {
    * @param amount
    * @return om beloppet har minskat saldo
    */
-  public boolean withdraw(int amount) {
-    if (amount <= balance.intValue()) {
-      try {
-        balance = balance.subtract(BigDecimal.valueOf(amount));
-      } catch (Exception e) {
-        return false;
-      }
-      return true;
-    }
-    return false;
-  }
+  public abstract boolean withdraw(int theAmount);
 }

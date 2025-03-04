@@ -17,6 +17,16 @@ public class CreditAccount extends Account {
     this(0, 1.1, 5000, 5.0, false);
   }
 
+  /**
+   * Skapa ett Kreditkonto
+   *
+   * @param theBalance      , Startkapital
+   * @param theInterestRate , Räntan 1.1% på insatta pengar > 0
+   * @param theCreditLimit  , Kreditgräns på 5000, kan ta ut pengar till belopp
+   *                        -5000 kr
+   * @param theDeptInterest , Skuldränta 5% om saldo < 0
+   * @param addNumber       , Öka kontonummer med 1
+   */
   public CreditAccount(int theBalance, double theInterestRate, int theCreditLimit, double theDeptInterest,
       boolean addNumber) {
     super("Kreditkonto", theBalance, theInterestRate, addNumber);
@@ -24,29 +34,27 @@ public class CreditAccount extends Account {
     deptInterest = BigDecimal.valueOf(theDeptInterest);
   }
 
-  // set- get- rutiner, används inte?
-  public BigDecimal getCreditLimit() {
-    return creditLimit;
-  }
-
-  public BigDecimal getDeptInterest() {
-    return deptInterest;
-  }
-
-  public void setCreditLimit(BigDecimal creditLimit) {
-    this.creditLimit = creditLimit;
-  }
-
-  public void setDeptInterest(BigDecimal deptInterest) {
-    this.deptInterest = deptInterest;
+  @Override
+  public String toString() {
+    int balanceValue = getBalance();
+    if (balanceValue < 0) {
+      return makeAccountInfo(balanceValue, deptInterest.doubleValue());
+    }
+    return super.toString();
   }
 
   @Override
-  public String toString() {
-    int balanceValue = super.getBalance();
-    if (balanceValue < 0) {
-      return super.makeAccountInfo(balanceValue, deptInterest.doubleValue());
+  public boolean withdraw(int theAmount) {
+    boolean result = true;
+    int currentBalance = getBalance();
+    if (theAmount < 0) {
+      result = false;
+    } else if (currentBalance - theAmount + creditLimit.intValue() > 0) {
+      // Ta bort theAmount från balance
+      result = balanceSubtract(theAmount);
+    } else {
+      result = false;
     }
-    return super.toString();
+    return result;
   }
 }

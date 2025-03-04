@@ -16,6 +16,14 @@ public class SavingsAccount extends Account {
     this(0, 2.4, 2.0, false);
   }
 
+  /**
+   * Skapa ett Sparkonto
+   *
+   * @param theBalance      , Startkapital
+   * @param theInterestRate , Ränta 2.4% på insatta pengar > 0
+   * @param theWithdrawRate , Uttagsränta 2% på beloppet
+   * @param addNumber       , Öka kontonummer med 1
+   */
   public SavingsAccount(int theBalance, double theInterestRate, double theWithdrawRate, boolean addNumber) {
     super("Sparkonto", theBalance, theInterestRate, addNumber);
     firstFree = true;
@@ -36,15 +44,26 @@ public class SavingsAccount extends Account {
   }
 
   public void setWithdrawRate(double theWithdrawRate) {
-    this.withdrawRate = theWithdrawRate;
+    withdrawRate = theWithdrawRate;
   }
 
   @Override
   public boolean withdraw(int theAmount) {
-    if (!firstFree) {
-      theAmount += (int) (theAmount * withdrawRate / 100.0);
+    boolean result = true;
+    if (theAmount < 0) {
+      result = false;
+    } else {
+      int currentBalance = getBalance();
+      if (!firstFree) {
+        theAmount += (int) (theAmount * withdrawRate / 100.0);
+      }
+      firstFree = false;
+      if (theAmount <= currentBalance) {
+        result = balanceSubtract(theAmount);
+      } else {
+        result = false;
+      }
     }
-    firstFree = false;
-    return super.withdraw(theAmount);
+    return result;
   }
 }

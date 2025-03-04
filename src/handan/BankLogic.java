@@ -69,8 +69,10 @@ public class BankLogic extends Customer {
         if (customer.getAccounts() == null) {
           customer.setAccounts();
         }
-        Account newAccount = new CreditAccount(); //
-
+        Account newAccount = new CreditAccount(0, 1.1, 5000, 5.0, true); // Här räknas kontonummer.
+        customer.getAccounts().add(newAccount);
+        result = newAccount.getAccountNumber();
+        break;
       }
     }
     return result;
@@ -241,6 +243,18 @@ public class BankLogic extends Customer {
       }
     }
     return customerInfo;
+  }
+
+  /**
+   * Hämtar en lista som innehåller presentation av alla transaktioner
+   *
+   * @param pNo
+   * @param accountId
+   * @return
+   */
+  public List<String> getTransactions(String pNo, int accountId) {
+    List<String> transactionsInfo = null;
+    return transactionsInfo;
   }
 
   /**
