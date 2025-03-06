@@ -34,8 +34,7 @@ public class SavingsAccount extends Account {
   }
 
   /**
-   * Rutin som beräknar räntan enligt saldo*räntesats / 100.0 konverterar till
-   * double-tal
+   * Rutin som beräknar räntan på Spar-konto
    *
    * @return x xxx kr
    */
@@ -47,6 +46,13 @@ public class SavingsAccount extends Account {
     return NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(numberInterest);
   }
 
+  /**
+   * Rutin som tar bort beloppet (amount) från saldo (balance) belopet ska vara >
+   * 0 och att uttagsränta beräknas efter första. Beloppet finns på saldo
+   *
+   * @param theAmount
+   * @return om beloppet har minskat saldo
+   */
   @Override
   protected boolean withdraw(int theAmount) {
     // Tidig return om beloppet är negativt
@@ -61,6 +67,6 @@ public class SavingsAccount extends Account {
 
     notFirstFree = true;
 
-    return (theAmount <= getAccountBalance()) && balanceSubtract(theAmount);
+    return (getAccountBalance() - theAmount >= 0) && balanceSubtract(theAmount);
   }
 }

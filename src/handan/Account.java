@@ -35,9 +35,9 @@ public abstract class Account {
   /**
    * Konstruktor för nytt bankkonto
    *
-   * @param theAccountType
-   * @param theBalance
-   * @param theInterestRate
+   * @param theAccountType  , Sparkonto eller Kreditkonto
+   * @param theBalance      , start belopp
+   * @param theInterestRate , 2.4% eller 1.1% på insatta pengar
    * @param addNumber
    */
   protected Account(String theAccountType, int theBalance, double theInterestRate, boolean addNumber) {
@@ -70,7 +70,8 @@ public abstract class Account {
   }
 
   /**
-   * Rutin som beräknar räntan beroende om Spar- eller Kredit-konto
+   * Rutin som beräknar räntan beroende om Spar- eller Kredit-konto Är abstrakt
+   * och definieras senare
    *
    * @return x xxx kr
    */
@@ -107,10 +108,20 @@ public abstract class Account {
     return accountNumber;
   }
 
+  /**
+   * Hämtar pekare till en lista med transaktioner
+   *
+   * @return pekare
+   */
   protected List<String> getAccountTransactions() {
     return transactions;
   }
 
+  /**
+   * Hämtar räntan på insatta pengar
+   *
+   * @return double värdet
+   */
   protected double getInterestRate() {
     return interestRate.doubleValue();
   }
@@ -134,8 +145,9 @@ public abstract class Account {
   }
 
   /**
-   * Skapa texten yyyy-MM-dd HH:mm:ss -500,00 kr Saldo: -500,00 kr Lägg till det i
-   * transaktionslistan
+   * Hjälpmetod att skapa en transaktion, gäller både för spar- och kredit-konto
+   * Skapa texten yyyy-MM-dd HH:mm:ss -500,00 kr Saldo: -500,00 kr, Lägg till det
+   * i transaktionslistan
    *
    * @param theAmount
    */
@@ -153,7 +165,7 @@ public abstract class Account {
   /**
    * Vid utskrift av kontot med kontonummer saldo kontotyp, percent.
    *
-   * @return "kontonr saldo kontotyp <procent %>"
+   * @return "kontonr saldo kontotyp procent %"
    */
   @Override
   public String toString() {
@@ -162,7 +174,8 @@ public abstract class Account {
 
   /**
    * Rutin som tar bort beloppet (amount) från saldo (balance) belopet ska vara >
-   * 0 och att beloppet finns på saldo
+   * 0 och att beloppet finns på saldo Det är olika beräkningar beroende på spar-
+   * eller kredit-konto därför ör rutinen abstrakt och den skapas senare.
    *
    * @param theAmount
    * @return om beloppet har minskat saldo

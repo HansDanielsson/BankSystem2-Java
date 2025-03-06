@@ -12,7 +12,7 @@ public class CreditAccount extends Account {
 
   // Variabler för enskilt kreditkonto
   private int creditLimit; // Kreditgräns (5000 kr)
-  private double deptInterest; // Skuldränta om negativt saldo.
+  private double deptInterest; // Skuldränta 5% om saldo < 0.
 
   protected CreditAccount() {
     this(0, 1.1, 5000, 5.0, false);
@@ -35,6 +35,11 @@ public class CreditAccount extends Account {
     deptInterest = theDeptInterest;
   }
 
+  /**
+   * Rutin som beräknar räntan på Kredit-konto Olika beroende på saldo beloppet
+   *
+   * @return x xxx kr
+   */
   @Override
   protected String calculateInterest() {
     int balance = getAccountBalance();
@@ -52,6 +57,13 @@ public class CreditAccount extends Account {
     return super.toString();
   }
 
+  /**
+   * Rutin som tar bort beloppet (amount) från saldo (balance) belopet ska vara >
+   * 0 och att beloppet är lägst creditLimit
+   *
+   * @param theAmount
+   * @return om beloppet har minskat saldo
+   */
   @Override
   protected boolean withdraw(int theAmount) {
     // Tidig return om beloppet är negativt
@@ -59,7 +71,7 @@ public class CreditAccount extends Account {
       return false;
     }
 
-    // Ta bort theAmount från balance
-    return (getAccountBalance() - theAmount + creditLimit > 0) && balanceSubtract(theAmount);
+    // Ta bort theAmount från balance, min -creditLimit
+    return (getAccountBalance() - theAmount + creditLimit >= 0) && balanceSubtract(theAmount);
   }
 }
