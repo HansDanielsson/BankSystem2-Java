@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class BankLogic extends Customer {
+public class BankLogic {
 
   private List<Customer> bankCustomer = new ArrayList<>();
 

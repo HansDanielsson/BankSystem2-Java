@@ -7,7 +7,7 @@ package handan;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Customer extends SavingsAccount {
+public class Customer {
   // Privata variabler till kund.
   private String customerName;
   private String customerSurname;
