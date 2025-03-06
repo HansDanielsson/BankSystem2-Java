@@ -5,15 +5,16 @@
  */
 package handan;
 
-import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class CreditAccount extends Account {
 
   // Variabler för enskilt kreditkonto
-  private BigDecimal creditLimit; // Kreditgräns (5000 kr)
-  private BigDecimal deptInterest; // Skuldränta om negativt saldo.
+  private int creditLimit; // Kreditgräns (5000 kr)
+  private double deptInterest; // Skuldränta om negativt saldo.
 
-  public CreditAccount() {
+  protected CreditAccount() {
     this(0, 1.1, 5000, 5.0, false);
   }
 
@@ -27,34 +28,38 @@ public class CreditAccount extends Account {
    * @param theDeptInterest , Skuldränta 5% om saldo < 0
    * @param addNumber       , Öka kontonummer med 1
    */
-  public CreditAccount(int theBalance, double theInterestRate, int theCreditLimit, double theDeptInterest,
+  protected CreditAccount(int theBalance, double theInterestRate, int theCreditLimit, double theDeptInterest,
       boolean addNumber) {
     super("Kreditkonto", theBalance, theInterestRate, addNumber);
-    creditLimit = BigDecimal.valueOf(theCreditLimit);
-    deptInterest = BigDecimal.valueOf(theDeptInterest);
+    creditLimit = theCreditLimit;
+    deptInterest = theDeptInterest;
+  }
+
+  @Override
+  protected String calculateInterest() {
+    int balance = getAccountBalance();
+    double interestRate = balance > 0 ? getInterestRate() : deptInterest;
+    double numberInterest = balance * interestRate / 100.0;
+    return NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(numberInterest);
   }
 
   @Override
   public String toString() {
-    int balanceValue = getBalance();
+    int balanceValue = getAccountBalance();
     if (balanceValue < 0) {
-      return makeAccountInfo(balanceValue, deptInterest.doubleValue());
+      return makeAccountInfo(balanceValue, deptInterest);
     }
     return super.toString();
   }
 
   @Override
-  public boolean withdraw(int theAmount) {
-    boolean result = true;
-    int currentBalance = getBalance();
-    if (theAmount < 0) {
-      result = false;
-    } else if (currentBalance - theAmount + creditLimit.intValue() > 0) {
-      // Ta bort theAmount från balance
-      result = balanceSubtract(theAmount);
-    } else {
-      result = false;
+  protected boolean withdraw(int theAmount) {
+    // Tidig return om beloppet är negativt
+    if (theAmount <= 0) {
+      return false;
     }
-    return result;
+
+    // Ta bort theAmount från balance
+    return (getAccountBalance() - theAmount + creditLimit > 0) && balanceSubtract(theAmount);
   }
 }

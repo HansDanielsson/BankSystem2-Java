@@ -12,48 +12,56 @@ public class Customer extends SavingsAccount {
   private String customerName;
   private String customerSurname;
   private String personalNumber;
-  private List<Account> accounts; // Lista med konton
+  private List<Account> accounts = null; // Lista med konton
 
-  // Konstruktor för en ny kund
-  public Customer() {
+  /**
+   * Default konstruktor för en kund.
+   */
+  protected Customer() {
     this("UnknownA", "UnknownB", "UnknownC");
   }
 
-  // Används när en ny kund skapas med namn, efternamn och personnummer.
-  public Customer(String inCustomerName, String inCustomerSurname, String inPersonalNumber) {
-    customerName = inCustomerName;
-    customerSurname = inCustomerSurname;
-    personalNumber = inPersonalNumber;
+  /**
+   * Skapa en ny kund med f-namn, e-namn och pNo
+   *
+   * @param theCustomerName
+   * @param theCustomerSurname
+   * @param thePersonalNumber
+   */
+  protected Customer(String theCustomerName, String theCustomerSurname, String thePersonalNumber) {
+    customerName = theCustomerName;
+    customerSurname = theCustomerSurname;
+    personalNumber = thePersonalNumber;
     accounts = null;
   }
 
   /**
    * Ändrar på kunden. Endast tillåtet att ändra på sin egen post.
    *
-   * @param inName
-   * @param inSureName
+   * @param theName
+   * @param theSureName
    * @return om något värde har ändrats
    */
-  public boolean changeCustomerName(String inName, String inSureName) {
+  protected boolean changeCustomerName(String theName, String theSureName) {
     boolean result = false;
-    // Byter endast om det är någon information
-    if (!inName.isEmpty()) {
-      customerName = inName;
+    // Byter endast om det är någon information att byta till
+    if (!theName.isEmpty()) {
+      customerName = theName;
       result = true;
     }
-    if (!inSureName.isEmpty()) {
-      customerSurname = inSureName;
+    if (!theSureName.isEmpty()) {
+      customerSurname = theSureName;
       result = true;
     }
     return result;
   }
 
   /**
-   * Rutin som ger ut den privata variabeln accounts
+   * Rutin som ger ut den privata listan men konton, accounts
    *
    * @return pekare till listan
    */
-  public List<Account> getAccounts() {
+  protected List<Account> getAccounts() {
     return accounts;
   }
 
@@ -62,14 +70,14 @@ public class Customer extends SavingsAccount {
    *
    * @return personalNumber
    */
-  public String getPersonalNumber() {
+  protected String getPersonalNumber() {
     return personalNumber;
   }
 
   /**
-   * Rutin som sätter den privata pekaren för konton till en ny lista
+   * Rutin som sätter den privata pekaren för konton till en ny tom lista
    */
-  public void setAccounts() {
+  protected void setAccounts() {
     accounts = new ArrayList<>();
   }
 

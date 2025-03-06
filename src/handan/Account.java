@@ -7,6 +7,10 @@ package handan;
 // Importsatser
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 // Klassdeklarationer för Kontot
@@ -21,15 +25,25 @@ public abstract class Account {
   private String accountType;
   private BigDecimal balance;
   private BigDecimal interestRate;
+  private List<String> transactions = null;
 
   // Default Konstruktor för ett nytt bankkonto
-  public Account() {
+  protected Account() {
     this(accountName, 0, 2.4, false);
   }
 
-  public Account(String theAccountType, int theBalance, double theInterestRate, boolean addNumber) {
+  /**
+   * Konstruktor för nytt bankkonto
+   *
+   * @param theAccountType
+   * @param theBalance
+   * @param theInterestRate
+   * @param addNumber
+   */
+  protected Account(String theAccountType, int theBalance, double theInterestRate, boolean addNumber) {
     if (addNumber) {
       lastAssignedNumber++; // Ska bara räknas upp med 1 ibland.
+      transactions = new ArrayList<>();
     }
     accountNumber = lastAssignedNumber;
     accountType = theAccountType;
@@ -38,32 +52,29 @@ public abstract class Account {
   }
 
   /**
-   * Rutin som tar bort belopper (theAmount) från saldo (balance) Använder
+   * Rutin som tar bort beloppet (theAmount) från saldo (balance) Använder
    * BigDecimal
    *
    * @param theAmount
    * @return om det gick bra
    */
-  public boolean balanceSubtract(int theAmount) {
-    boolean result = true;
+  protected boolean balanceSubtract(int theAmount) {
     try {
       balance = balance.subtract(BigDecimal.valueOf(theAmount));
+      // Skapa transaktionen och spara den
+      makeTransaktion(-theAmount);
     } catch (Exception e) {
-      result = false;
+      return false;
     }
-    return result;
+    return true;
   }
 
   /**
-   * Rutin som beräknar räntan på BigDecimal-modell enligt saldo*räntesats / 100.0
-   * konverterar till double-tal
+   * Rutin som beräknar räntan beroende om Spar- eller Kredit-konto
    *
    * @return x xxx kr
    */
-  public String calculateInterest() {
-    double numberInterest = balance.multiply(interestRate).divide(BigDecimal.valueOf(100)).doubleValue();
-    return NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(numberInterest);
-  }
+  protected abstract String calculateInterest();
 
   /**
    * Rutin som sätter in beloppet (theAmount) till saldo (balance) Kontroll har
@@ -72,14 +83,19 @@ public abstract class Account {
    * @param theAmount
    * @return true hela tiden för att theAmount > 0
    */
-  public boolean deposit(int theAmount) {
-    boolean result = true;
+  protected boolean deposit(int theAmount) {
     try {
       balance = balance.add(BigDecimal.valueOf(theAmount));
+      // Skapa transaktion och spara den
+      makeTransaktion(theAmount);
     } catch (Exception e) {
-      result = false;
+      return false;
     }
-    return result;
+    return true;
+  }
+
+  protected int getAccountBalance() {
+    return balance.intValue();
   }
 
   /**
@@ -87,16 +103,16 @@ public abstract class Account {
    *
    * @return accountNumber
    */
-  public int getAccountNumber() {
+  protected int getAccountNumber() {
     return accountNumber;
   }
 
-  public String getAccountType() {
-    return accountType;
+  protected List<String> getAccountTransactions() {
+    return transactions;
   }
 
-  public int getBalance() {
-    return balance.intValue();
+  protected double getInterestRate() {
+    return interestRate.doubleValue();
   }
 
   /**
@@ -104,12 +120,12 @@ public abstract class Account {
    *
    * @return "kontonr saldo kontotyp <procent %>"
    */
-  public String infoAccount() {
+  protected String infoAccount() {
     String balanceStr = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(balance);
     return accountNumber + " " + balanceStr + " " + accountType;
   }
 
-  public String makeAccountInfo(int theBalance, double theInterestRate) {
+  protected String makeAccountInfo(int theBalance, double theInterestRate) {
     String balanceStr = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(theBalance);
     NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.of("SV", "SE"));
     percentFormat.setMaximumFractionDigits(1); // Anger att vi vill ha max 1 decimal
@@ -117,8 +133,21 @@ public abstract class Account {
     return accountNumber + " " + balanceStr + " " + accountType + " " + percentStr;
   }
 
-  public void setAccountType(String theAccountType) {
-    accountType = theAccountType;
+  /**
+   * Skapa texten yyyy-MM-dd HH:mm:ss -500,00 kr Saldo: -500,00 kr Lägg till det i
+   * transaktionslistan
+   *
+   * @param theAmount
+   */
+  private void makeTransaktion(int theAmount) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    LocalDateTime date = LocalDateTime.now();
+    String strDate = date.format(formatter);
+    String strBalance = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(balance);
+    String strAmount = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(theAmount);
+
+    String oneTransaktion = strDate + " " + strAmount + " Saldo: " + strBalance;
+    transactions.add(oneTransaktion);
   }
 
   /**
@@ -135,8 +164,8 @@ public abstract class Account {
    * Rutin som tar bort beloppet (amount) från saldo (balance) belopet ska vara >
    * 0 och att beloppet finns på saldo
    *
-   * @param amount
+   * @param theAmount
    * @return om beloppet har minskat saldo
    */
-  public abstract boolean withdraw(int theAmount);
+  protected abstract boolean withdraw(int theAmount);
 }
