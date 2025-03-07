@@ -35,7 +35,7 @@ public class BankLogic {
   }
 
   /**
-   * Rutin för att stänga ett konto för en kund
+   * Rutin på konto för att ta bort transaktioner och stänga för en kund
    *
    * @param pNo
    * @param accountId
@@ -53,6 +53,8 @@ public class BankLogic {
     }
 
     String result = account.infoAccount() + " " + account.calculateInterest();
+    // Ta bort Transaktionerna
+    account.getAccountTransactions().clear();
     closeCustomer.getAccounts().remove(account);
     return result;
   }
