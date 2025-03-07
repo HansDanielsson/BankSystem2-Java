@@ -52,7 +52,7 @@ public class CreditAccount extends Account {
   public String toString() {
     int balanceValue = getAccountBalance();
     if (balanceValue < 0) {
-      return makeAccountInfo(balanceValue, deptInterest);
+      return makeAccountInfo(deptInterest);
     }
     return super.toString();
   }

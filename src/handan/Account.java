@@ -62,7 +62,7 @@ public abstract class Account {
     try {
       balance = balance.subtract(BigDecimal.valueOf(theAmount));
       // Skapa transaktionen och spara den
-      makeTransaktion(-theAmount);
+      makeTransaction(-theAmount);
     } catch (Exception e) {
       return false;
     }
@@ -88,7 +88,7 @@ public abstract class Account {
     try {
       balance = balance.add(BigDecimal.valueOf(theAmount));
       // Skapa transaktion och spara den
-      makeTransaktion(theAmount);
+      makeTransaction(theAmount);
     } catch (Exception e) {
       return false;
     }
@@ -136,12 +136,19 @@ public abstract class Account {
     return accountNumber + " " + balanceStr + " " + accountType;
   }
 
-  protected String makeAccountInfo(int theBalance, double theInterestRate) {
-    String balanceStr = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(theBalance);
+  /**
+   * Rutin som räknar ut räntan på kontot Räntan är olika beroende på belopp och
+   * kontotyp.
+   *
+   * @param theInterestRate , Räntan som gäller till beloppet
+   * @return
+   */
+  protected String makeAccountInfo(double theInterestRate) {
+    String strBalance = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(balance);
     NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.of("SV", "SE"));
     percentFormat.setMaximumFractionDigits(1); // Anger att vi vill ha max 1 decimal
-    String percentStr = percentFormat.format(theInterestRate / 100.0);
-    return accountNumber + " " + balanceStr + " " + accountType + " " + percentStr;
+    String strPercent = percentFormat.format(theInterestRate / 100.0);
+    return accountNumber + " " + strBalance + " " + accountType + " " + strPercent;
   }
 
   /**
@@ -151,15 +158,15 @@ public abstract class Account {
    *
    * @param theAmount
    */
-  private void makeTransaktion(int theAmount) {
+  private void makeTransaction(int theAmount) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     LocalDateTime date = LocalDateTime.now();
     String strDate = date.format(formatter);
     String strBalance = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(balance);
     String strAmount = NumberFormat.getCurrencyInstance(Locale.of("SV", "SE")).format(theAmount);
 
-    String oneTransaktion = strDate + " " + strAmount + " Saldo: " + strBalance;
-    transactions.add(oneTransaktion);
+    String oneTransaction = strDate + " " + strAmount + " Saldo: " + strBalance;
+    transactions.add(oneTransaction);
   }
 
   /**
@@ -169,7 +176,7 @@ public abstract class Account {
    */
   @Override
   public String toString() {
-    return makeAccountInfo(balance.intValue(), interestRate.doubleValue());
+    return makeAccountInfo(interestRate.doubleValue());
   }
 
   /**
